@@ -12,10 +12,10 @@ This CLI uses the same CloudKit REST API that [Bear Web](https://web.bear.app) u
 
 ### Download the binary
 
-Grab the latest release from [GitHub Releases](https://github.com/mreider/better-bear-cli/releases/latest).
+Grab the latest release from [GitHub Releases](https://github.com/asabirov/bcli/releases/latest).
 
 ```
-curl -L https://github.com/mreider/better-bear-cli/releases/latest/download/bcli-macos-universal.tar.gz -o bcli.tar.gz
+curl -L https://github.com/asabirov/bcli/releases/latest/download/bcli-macos-universal.tar.gz -o bcli.tar.gz
 tar xzf bcli.tar.gz
 mv bcli ~/.local/bin/bcli
 rm bcli.tar.gz
@@ -28,8 +28,8 @@ The binary is universal (arm64 + x86_64). Requires macOS 13+.
 Requires Swift 5.9+.
 
 ```
-git clone https://github.com/mreider/better-bear-cli.git
-cd better-bear-cli
+git clone https://github.com/asabirov/bcli.git
+cd bcli
 swift build -c release
 cp .build/release/bcli ~/.local/bin/bcli
 ```
