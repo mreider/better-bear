@@ -40,6 +40,12 @@
     { "name": "bear_find_duplicates", "description": "Find duplicate titles" },
     { "name": "bear_health_check", "description": "Diagnose library issues" }
   ],
+  "privacy_policies": [
+    {
+      "url": "https://better-bear.com/privacy.html",
+      "label": "Privacy Policy"
+    }
+  ],
   "compatibility": {
     "platforms": ["darwin"]
   }

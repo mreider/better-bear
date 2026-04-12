@@ -10,48 +10,35 @@ MCP server and CLI for [Bear](https://bear.app) notes via CloudKit. Includes a *
 
 **Full docs: [better-bear.com](https://better-bear.com)**
 
-## Use with Claude Desktop
+## Install
 
-Add to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "better-bear": {
-      "command": "npx",
-      "args": ["-y", "better-bear"]
-    }
-  }
-}
-```
-
-Or download the [.mcpb bundle](https://github.com/mreider/better-bear-cli/releases/latest) and double-click to install.
-
-## Use with Claude Code
-
-```
-claude mcp add better-bear -- npx -y better-bear
-```
-
-## Prerequisites
-
-The MCP server needs the `bcli` binary:
+Install the CLI, then connect to Claude:
 
 ```
 curl -sL https://raw.githubusercontent.com/mreider/better-bear-cli/main/install.sh | bash
 bcli auth
+bcli mcp install
 ```
 
-The installer will offer to set up the MCP server too. Or install everything at once:
+This installs the `bcli` binary, authenticates with iCloud, and sets up the MCP server for both Claude Desktop (via `.mcpb` bundle) and Claude Code.
+
+### Other install methods
+
+| Method | Command |
+|--------|---------|
+| Claude Desktop only | `bcli mcp install --desktop-only` |
+| Claude Code only | `bcli mcp install --code-only` |
+| Claude Code (direct) | `claude mcp add better-bear -- npx -y better-bear` |
+| Config file | `bcli mcp install --json` |
+| .mcpb bundle | Download from [latest release](https://github.com/mreider/better-bear-cli/releases/latest) and double-click |
+
+### Manage
 
 ```
-curl -sL https://raw.githubusercontent.com/mreider/better-bear-cli/main/install.sh | bash -s -- --mcp
-```
-
-## Upgrade
-
-```
-bcli upgrade
+bcli mcp status      # check what's configured
+bcli mcp uninstall   # remove from Claude Desktop and Claude Code
+bcli mcp reinstall   # clean uninstall + install
+bcli upgrade         # upgrade bcli binary
 ```
 
 ## CLI

@@ -8,38 +8,29 @@ Works via CloudKit — no Bear URL scheme, no AppleScript. Your notes stay in sy
 
 ## Quick start
 
-### Claude Desktop
-
-Add to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "better-bear": {
-      "command": "npx",
-      "args": ["-y", "better-bear"]
-    }
-  }
-}
-```
-
-### Claude Code
-
 ```sh
-claude mcp add better-bear -- npx -y better-bear
+curl -sL https://raw.githubusercontent.com/mreider/better-bear-cli/main/install.sh | bash
+bcli auth
+bcli mcp install
 ```
+
+This installs the `bcli` binary, authenticates with iCloud, and sets up the MCP server for Claude Desktop (`.mcpb` bundle) and Claude Code.
+
+### Other install methods
+
+| Method | Command |
+|--------|---------|
+| Claude Desktop only | `bcli mcp install --desktop-only` |
+| Claude Code only | `bcli mcp install --code-only` |
+| Claude Code (direct) | `claude mcp add better-bear -- npx -y better-bear` |
+| Config file | `bcli mcp install --json` |
+| .mcpb bundle | Download from [latest release](https://github.com/mreider/better-bear-cli/releases/latest) and double-click |
 
 ### Prerequisites
 
 1. **Node.js 18+**
-2. **bcli** — the underlying CLI binary:
-   ```sh
-   curl -fsSL https://raw.githubusercontent.com/mreider/better-bear-cli/main/install.sh | bash
-   ```
-3. **Authenticate** with your Apple ID:
-   ```sh
-   bcli auth
-   ```
+2. **bcli** binary (installed by the script above)
+3. **iCloud authentication** via `bcli auth`
 
 ## Tools
 
@@ -91,6 +82,10 @@ Authentication tokens are stored locally in `~/.config/bear-cli/auth.json` and a
 - [Website](https://better-bear.com)
 - [GitHub](https://github.com/mreider/better-bear-cli)
 - [Issues](https://github.com/mreider/better-bear-cli/issues)
+
+## Privacy Policy
+
+Better Bear does not collect, transmit, or store any personal data on external servers. Authentication tokens and note caches are stored locally on your machine. Network requests go only to Apple CloudKit (to access your notes), GitHub (for updates), and npm (for package resolution). See the full [Privacy Policy](https://better-bear.com/privacy.html).
 
 ## License
 

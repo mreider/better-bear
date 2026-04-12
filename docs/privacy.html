@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — better bear</title>
+  <link rel="icon" href="better-bear.png" type="image/png">
+  <style>
+    :root {
+      --bg: #ffffff; --text: #1a1a2e; --text-muted: #6b7280;
+      --accent: #dd4c4f; --border: #e5e7eb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1117; --text: #e2e8f0; --text-muted: #94a3b8;
+        --accent: #dd4c4f; --border: #2d2d3d;
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 700px; margin: 0 auto; padding: 60px 24px; }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    h2 { font-size: 18px; font-weight: 600; margin: 28px 0 8px; }
+    p, li { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+    ul { padding-left: 20px; }
+    a { color: var(--accent); }
+    code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: rgba(127,127,127,0.1); padding: 2px 5px; border-radius: 3px; }
+    .date { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--text-muted); }
+    footer a { color: var(--text-muted); text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Privacy Policy</h1>
+  <p class="date">Effective date: April 12, 2026</p>
+
+  <h2>What Better Bear does</h2>
+  <p>Better Bear is an open-source MCP server and CLI that lets you access your <a href="https://bear.app">Bear</a> notes from Claude Desktop, Claude Code, or the terminal. It communicates with Apple's CloudKit service using your own iCloud credentials.</p>
+
+  <h2>Data collection</h2>
+  <p>Better Bear does <strong>not</strong> collect, transmit, or store any personal data on external servers. Specifically:</p>
+  <ul>
+    <li>No analytics or telemetry</li>
+    <li>No crash reporting to third parties</li>
+    <li>No advertising or tracking</li>
+    <li>No data shared with the developer or any third party</li>
+  </ul>
+
+  <h2>Data that stays on your machine</h2>
+  <p>The following data is stored locally on your computer and never leaves it:</p>
+  <ul>
+    <li><strong>iCloud authentication tokens</strong> — stored in <code>~/.config/bear-cli/auth.json</code>. These are your Apple CloudKit session tokens, used to access your iCloud private database. They are never transmitted anywhere except to Apple's CloudKit API.</li>
+    <li><strong>Note cache</strong> — a local cache of your Bear notes in <code>~/.config/bear-cli/</code> to avoid re-downloading unchanged notes on every request.</li>
+    <li><strong>Context library</strong> — if you use the context library feature, a folder of markdown files synced from your Bear notes is stored locally (default: <code>~/.bear-context/</code>).</li>
+  </ul>
+
+  <h2>Network requests</h2>
+  <p>Better Bear makes network requests only to:</p>
+  <ul>
+    <li><strong>Apple CloudKit</strong> (<code>api.apple-cloudkit.com</code>) — to read, create, edit, and sync your Bear notes. This is the same API used by <a href="https://web.bear.app">Bear Web</a>.</li>
+    <li><strong>GitHub</strong> (<code>api.github.com</code>) — only when checking for updates via <code>bcli upgrade</code>.</li>
+    <li><strong>npm registry</strong> (<code>registry.npmjs.org</code>) — only when Claude Desktop or Claude Code launches the MCP server via <code>npx</code>.</li>
+  </ul>
+  <p>No note content, metadata, or personal information is sent anywhere else.</p>
+
+  <h2>MCP server communication</h2>
+  <p>When used as an MCP server, Better Bear communicates with the MCP client (Claude Desktop or Claude Code) over local stdio pipes. Note content is passed between the MCP server process and the client process on your machine. This communication does not leave your computer — the MCP client may send note content to Anthropic's API as part of the conversation context, subject to Anthropic's own privacy policy.</p>
+
+  <h2>Third-party services</h2>
+  <ul>
+    <li><strong>Apple iCloud</strong> — your notes are stored in your iCloud private database, governed by <a href="https://www.apple.com/legal/privacy/">Apple's Privacy Policy</a>.</li>
+    <li><strong>Anthropic (Claude)</strong> — if you use Better Bear with Claude Desktop or Claude Code, note content shared during conversations is subject to <a href="https://www.anthropic.com/privacy">Anthropic's Privacy Policy</a>.</li>
+  </ul>
+
+  <h2>Data deletion</h2>
+  <p>To remove all locally stored data:</p>
+  <ul>
+    <li>Delete <code>~/.config/bear-cli/</code> (auth tokens and cache)</li>
+    <li>Delete <code>~/.bear-context/</code> (context library, if used)</li>
+    <li>Run <code>bcli mcp uninstall</code> to remove MCP server configuration</li>
+  </ul>
+
+  <h2>Open source</h2>
+  <p>Better Bear is fully open source under the MIT license. You can audit the code at <a href="https://github.com/mreider/better-bear-cli">github.com/mreider/better-bear-cli</a>.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes, the updated version will be posted at this URL. Better Bear does not collect email addresses, so there is no way to notify users directly — check this page if you have concerns.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or concerns: <a href="mailto:mreider@gmail.com">mreider@gmail.com</a></p>
+  <p>Issues: <a href="https://github.com/mreider/better-bear-cli/issues">github.com/mreider/better-bear-cli/issues</a></p>
+
+  <footer>
+    <a href="index.html">better-bear.com</a> &middot;
+    <a href="https://github.com/mreider/better-bear-cli">GitHub</a>
+  </footer>
+
+</div>
+</body>
+</html>

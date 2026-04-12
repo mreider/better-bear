@@ -34,6 +34,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["ls", "--json"];
@@ -63,6 +68,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["id"],
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: (input) => {
@@ -101,6 +111,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["query"],
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["search", String(input.query), "--json"];
@@ -119,6 +134,11 @@ export const tools: Record<string, ToolHandler> = {
       inputSchema: {
         type: "object" as const,
         properties: {},
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: () => ["tags", "--json"],
@@ -153,6 +173,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["title"],
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
       },
     },
     buildArgs: (input) => {
@@ -221,6 +246,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["id"],
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
       },
     },
     buildArgs: (input) => {
@@ -293,6 +323,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => ["trash", String(input.id), "--json"],
   },
@@ -310,6 +345,11 @@ export const tools: Record<string, ToolHandler> = {
             description: "Force a full re-sync instead of incremental",
           },
         },
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: (input) => {
@@ -332,6 +372,11 @@ export const tools: Record<string, ToolHandler> = {
             description: "Maximum number of notes to return (default 30)",
           },
         },
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: (input) => {
@@ -356,6 +401,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id"],
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => ["todo", String(input.id), "--json"],
   },
@@ -378,6 +428,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["id", "item_index"],
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
       },
     },
     buildArgs: (input) => [
@@ -424,6 +479,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id", "file_path"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+      },
     },
     buildArgs: (input) => {
       const args = [
@@ -458,6 +518,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["archive", String(input.id), "--json"];
@@ -484,6 +549,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["id", "tag"],
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
       },
     },
     buildArgs: (input) => [
@@ -514,6 +584,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id", "tag"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => [
       "tag",
@@ -543,6 +618,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["old_name", "new_name"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => [
       "tag",
@@ -568,6 +648,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["tag"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => [
       "tag",
@@ -591,6 +676,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["ls", "--untagged", "--json"];
@@ -608,6 +698,11 @@ export const tools: Record<string, ToolHandler> = {
         type: "object" as const,
         properties: {},
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: () => ["stats", "--json"],
   },
@@ -621,6 +716,11 @@ export const tools: Record<string, ToolHandler> = {
         type: "object" as const,
         properties: {},
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: () => ["duplicates", "--json"],
   },
@@ -633,6 +733,11 @@ export const tools: Record<string, ToolHandler> = {
       inputSchema: {
         type: "object" as const,
         properties: {},
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: () => ["health", "--json"],
@@ -665,6 +770,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["context", "init", "--json"];
@@ -690,6 +800,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["context", "sync", "--json"];
@@ -706,6 +821,11 @@ export const tools: Record<string, ToolHandler> = {
       inputSchema: {
         type: "object" as const,
         properties: {},
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: () => ["context", "index", "--json"],
@@ -727,6 +847,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["paths"],
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: (input) => {
@@ -756,6 +881,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["query"],
       },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["context", "search", String(input.query), "--json"];
@@ -784,6 +914,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["context", "add", String(input.id), "--json"];
@@ -807,6 +942,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["id"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => ["context", "remove", String(input.id), "--json"],
   },
@@ -819,6 +959,11 @@ export const tools: Record<string, ToolHandler> = {
       inputSchema: {
         type: "object" as const,
         properties: {},
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: () => ["context", "status", "--json"],
@@ -858,6 +1003,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["filename", "content"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+      },
     },
     buildArgs: (input) => {
       const args = ["context", "import", "--stdin", "--json"];
@@ -878,6 +1028,11 @@ export const tools: Record<string, ToolHandler> = {
       inputSchema: {
         type: "object" as const,
         properties: {},
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: () => ["context", "ingest", "--json"],
@@ -918,6 +1073,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["filename", "action"],
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
       },
     },
     buildArgs: (input) => {
@@ -960,6 +1120,11 @@ export const tools: Record<string, ToolHandler> = {
         },
         required: ["filename"],
       },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+      },
     },
     buildArgs: (input) => {
       const args = ["context", "push", String(input.filename), "--json"];
@@ -983,6 +1148,11 @@ export const tools: Record<string, ToolHandler> = {
           },
         },
         required: ["filename"],
+      },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
       },
     },
     buildArgs: (input) => [
