@@ -88,7 +88,7 @@ The architecture follows Karpathy's three-folder pattern: `bear/` (synced from C
 
 ## MCP Tools
 
-29 tools covering notes, tags, TODOs, attachments, search, front matter, stats, health checks, and the context library. See the [MCP server README](mcp-server/README.md) for the full list.
+34 tools covering notes, tags, TODOs, attachments, search, front matter, stats, health checks, and the context library. See the [MCP server README](mcp-server/README.md) for the full list.
 
 ## Contributors
 

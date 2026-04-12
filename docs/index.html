@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>better bear</title>
-  <meta name="description" content="MCP server and CLI for Bear notes. Let Claude read, search, create, and edit your notes — or use them from the terminal.">
+  <meta name="description" content="MCP server and CLI for Bear notes. Let Claude read, search, create, and edit your notes — or use them from the terminal. Powered by CloudKit.">
   <link rel="icon" href="better-bear.png" type="image/png">
   <style>
     :root {
@@ -38,11 +38,6 @@
     .code-block .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: inherit; }
     .code-block .copy-btn:hover { background: rgba(255,255,255,0.25); color: #fff; border-color: rgba(255,255,255,0.4); }
 
-    /* TOC — prominent, bordered, multi-column */
-    .toc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px 20px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 10px; margin: 20px 0; background: var(--bg); }
-    .toc a { font-size: 13px; font-weight: 500; color: var(--text); text-decoration: none; padding: 4px 0; display: block; }
-    .toc a:hover { color: var(--accent); }
-
     .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
     .feature { padding: 14px; border: 1px solid var(--border); border-radius: 10px; }
     .feature h3 { font-size: 14px; font-weight: 600; margin: 0 0 4px; color: var(--text); }
@@ -64,6 +59,10 @@
     .callout strong { color: var(--text); }
     .callout a { color: var(--accent); }
     .context-diagram { background: var(--bg-code); border-radius: 10px; padding: 16px 20px; margin: 12px 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; color: #e2e8f0; line-height: 1.6; white-space: pre; overflow-x: auto; }
+
+    .toc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px 20px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 10px; margin: 20px 0; background: var(--bg); }
+    .toc a { font-size: 13px; font-weight: 500; color: var(--text); text-decoration: none; padding: 4px 0; display: block; }
+    .toc a:hover { color: var(--accent); }
 
     .coffee { text-align: center; padding: 24px 0; }
     .coffee a { display: inline-block; transition: opacity 0.2s; }
@@ -98,7 +97,7 @@
 
   <div class="features">
     <div class="feature"><h3>Context Library</h3><p>Curated, synced context for LLMs. Index-first retrieval.</p></div>
-    <div class="feature"><h3>MCP Server</h3><p>29 tools for Claude Desktop and Claude Code.</p></div>
+    <div class="feature"><h3>MCP Server</h3><p>34 tools for Claude Desktop and Claude Code.</p></div>
     <div class="feature"><h3>CLI</h3><p>Create, search, edit, tag, and attach files from the terminal.</p></div>
     <div class="feature"><h3>CloudKit</h3><p>Same API as Bear Web. Syncs to all devices.</p></div>
   </div>
@@ -108,19 +107,10 @@
     <a href="#claude-desktop">Claude Desktop</a>
     <a href="#claude-code">Claude Code</a>
     <a href="#mcpb">One-Click Install</a>
-    <a href="#mcp-tools">MCP Tools</a>
     <a href="#cli-install">CLI Install</a>
-    <a href="#notes">Notes &amp; Search</a>
-    <a href="#create">Create &amp; Edit</a>
-    <a href="#attachments">Attachments</a>
-    <a href="#tags">Tags</a>
-    <a href="#organize">Archive, Trash &amp; TODOs</a>
-    <a href="#frontmatter">Front Matter</a>
-    <a href="#tools">Library Tools</a>
-    <a href="#scripts">Scripts</a>
     <a href="#use-cases">Use Cases</a>
     <a href="#how">How It Works</a>
-    <a href="#support">Support</a>
+    <a href="docs.html">Full Reference &rarr;</a>
   </nav>
 
   <hr>
@@ -174,43 +164,11 @@ bcli context sync</code></div>
 <strong>Claude:</strong> [fetches summer-trip-planning.md]
         You're comparing three options from your planning note: ...</code></div>
 
-    <h3>Example: CLI automation</h3>
-    <div class="code-block"><code># Sync and check for issues
-bcli context sync --json | jq '.added, .removed'
-bcli context status --json | jq '.warnings[]'
-
-# Quick lookup
-bcli context fetch bear/meeting-notes.md | pbcopy</code></div>
-
-    <h3>CLI commands</h3>
-    <table>
-      <tr><td>bcli context init</td><td>One-time setup</td></tr>
-      <tr><td>bcli context sync</td><td>Pull qualifying notes, reconcile, regenerate index</td></tr>
-      <tr><td>bcli context sync --force</td><td>Full re-sync</td></tr>
-      <tr><td>bcli context index</td><td>Show the index (table of contents)</td></tr>
-      <tr><td>bcli context fetch &lt;path&gt;</td><td>Load a specific file</td></tr>
-      <tr><td>bcli context search "query"</td><td>Full-text search across all files</td></tr>
-      <tr><td>bcli context add &lt;id&gt;</td><td>Tag a note with #context, sync</td></tr>
-      <tr><td>bcli context add &lt;id&gt; --subtag research</td><td>Tag as #context/research</td></tr>
-      <tr><td>bcli context remove &lt;id&gt;</td><td>Untag and remove from library</td></tr>
-      <tr><td>bcli context status</td><td>Health check: counts, tokens, staleness, warnings</td></tr>
-    </table>
-
-    <h3>MCP tools</h3>
-    <table>
-      <tr><td>bear_context_setup</td><td>Initialize the context library</td></tr>
-      <tr><td>bear_context_sync</td><td>Sync Bear notes to the library</td></tr>
-      <tr><td>bear_context_index</td><td>Get the index + freshness metadata</td></tr>
-      <tr><td>bear_context_fetch</td><td>Load specific files by path</td></tr>
-      <tr><td>bear_context_search</td><td>Full-text search across all files</td></tr>
-      <tr><td>bear_context_add</td><td>Tag a note for inclusion</td></tr>
-      <tr><td>bear_context_remove</td><td>Untag and remove a note</td></tr>
-      <tr><td>bear_context_status</td><td>Health stats and warnings</td></tr>
-    </table>
-
     <div class="callout">
       <strong>Index-first retrieval:</strong> Claude reads <code>index.md</code> first (a compact table of contents with file paths, titles, and token estimates), identifies which files are relevant to your question, then fetches only those. This follows the same pattern as Karpathy's <code>index.md</code> manifest and <a href="https://llmstxt.org" target="_blank">llms.txt</a>: give the model a map, not a dump.
     </div>
+
+    <p>See <a href="docs.html#context-cli">all context CLI commands</a> and <a href="docs.html#context-mcp">context MCP tools</a> in the full reference.</p>
   </section>
 
   <hr>
@@ -254,7 +212,6 @@ bcli context fetch bear/meeting-notes.md | pbcopy</code></div>
   <section id="cli-install">
     <h2>CLI Install &amp; Upgrade</h2>
     <p>The <code>bcli</code> binary is required by both the MCP server and the terminal CLI.</p>
-    <h3>Quick install</h3>
     <div class="code-block">
       <button class="copy-btn" onclick="navigator.clipboard.writeText('curl -sL https://raw.githubusercontent.com/mreider/better-bear-cli/main/install.sh | bash');this.textContent='Copied!'">Copy</button>
       <code>curl -sL https://raw.githubusercontent.com/mreider/better-bear-cli/main/install.sh | bash
@@ -264,181 +221,7 @@ bcli auth</code>
     <h3>Upgrade</h3>
     <div class="code-block"><code>bcli upgrade         # download latest
 bcli upgrade --check # check only</code></div>
-    <p>Run <code>hash -r</code> after upgrading. Restart Claude Desktop if using MCP.</p>
-    <h3>Build from source</h3>
-    <div class="code-block"><code>git clone https://github.com/mreider/better-bear-cli.git
-cd better-bear-cli && swift build -c release
-cp .build/release/bcli ~/.local/bin/bcli</code></div>
-  </section>
-
-  <hr>
-
-  <section id="notes">
-    <h2>Notes &amp; Search</h2>
-    <table>
-      <tr><td>bcli ls</td><td>List notes</td></tr>
-      <tr><td>bcli ls --tag work --json</td><td>Filter by tag, JSON output</td></tr>
-      <tr><td>bcli ls --untagged</td><td>Notes with no tags</td></tr>
-      <tr><td>bcli ls --archived</td><td>Archived notes</td></tr>
-      <tr><td>bcli ls --trashed</td><td>Trashed notes</td></tr>
-      <tr><td>bcli get &lt;id&gt;</td><td>View note with metadata</td></tr>
-      <tr><td>bcli get &lt;id&gt; --raw</td><td>Just the markdown</td></tr>
-      <tr><td>bcli get &lt;id&gt; --json</td><td>JSON output (includes parsed front matter)</td></tr>
-      <tr><td>bcli search "query"</td><td>Full-text search (title, tags, body)</td></tr>
-      <tr><td>bcli search "q" --since yesterday</td><td>Modified after date</td></tr>
-      <tr><td>bcli search "q" --before 2026-06-01</td><td>Modified before date</td></tr>
-    </table>
-    <p>Date filters: <code>today</code> <code>yesterday</code> <code>last-week</code> <code>last-month</code> <code>last-year</code> or <code>YYYY-MM-DD</code></p>
-  </section>
-
-  <hr>
-
-  <section id="create">
-    <h2>Create &amp; Edit</h2>
-    <table>
-      <tr><td>bcli create "Title" -b "Body"</td><td>Create a note</td></tr>
-      <tr><td>bcli create "T" -t "t1,t2"</td><td>With tags</td></tr>
-      <tr><td>bcli create "T" --stdin</td><td>Body from stdin</td></tr>
-      <tr><td>bcli create "T" --fm "status=draft"</td><td>With YAML front matter</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --append "text"</td><td>Append to end</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --append "x" --after "Heading"</td><td>Insert after a heading</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --replace-section "H" --section-content "new"</td><td>Replace section content</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --editor</td><td>Open in $EDITOR</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --stdin</td><td>Replace from stdin</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="attachments">
-    <h2>Attachments</h2>
-    <p>Uploads to iCloud. Images (jpg, png, gif, webp, heic, svg) render inline. Other files embed.</p>
-    <table>
-      <tr><td>bcli attach &lt;id&gt; photo.jpg</td><td>Append image to note</td></tr>
-      <tr><td>bcli attach &lt;id&gt; img.png --after "Profile"</td><td>After a heading</td></tr>
-      <tr><td>bcli attach &lt;id&gt; img.png --before "Footer"</td><td>Before text</td></tr>
-      <tr><td>bcli attach &lt;id&gt; img.png --prepend</td><td>After title</td></tr>
-      <tr><td>bcli attach name.png --base64 &lt;data&gt;</td><td>From base64 (programmatic)</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="tags">
-    <h2>Tags</h2>
-    <table>
-      <tr><td>bcli tags</td><td>Tag tree with counts</td></tr>
-      <tr><td>bcli tag add &lt;id&gt; "work"</td><td>Add tag to note</td></tr>
-      <tr><td>bcli tag remove &lt;id&gt; "work"</td><td>Remove tag from note</td></tr>
-      <tr><td>bcli tag rename "old" "new"</td><td>Rename across all notes</td></tr>
-      <tr><td>bcli tag delete "tag"</td><td>Remove from all notes</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="organize">
-    <h2>Archive, Trash &amp; TODOs</h2>
-    <table>
-      <tr><td>bcli archive &lt;id&gt;</td><td>Archive a note</td></tr>
-      <tr><td>bcli archive &lt;id&gt; --undo</td><td>Unarchive</td></tr>
-      <tr><td>bcli trash &lt;id&gt;</td><td>Move to trash</td></tr>
-      <tr><td>bcli todo</td><td>Notes with open TODOs</td></tr>
-      <tr><td>bcli todo &lt;id&gt;</td><td>View/toggle interactively</td></tr>
-      <tr><td>bcli todo &lt;id&gt; --toggle 3</td><td>Toggle item 3</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="frontmatter">
-    <h2>YAML Front Matter</h2>
-    <p>Bear collapses <code>---</code> blocks. Use for status, projects, dates, or any metadata.</p>
-    <table>
-      <tr><td>bcli create "T" --fm "status=draft" "project=alpha"</td><td>Create with front matter</td></tr>
-      <tr><td>bcli get &lt;id&gt; --json</td><td>Includes parsed frontmatter object</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --set-fm "status=done"</td><td>Set/update a field</td></tr>
-      <tr><td>bcli edit &lt;id&gt; --remove-fm "draft"</td><td>Remove a field</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="tools">
-    <h2>Library Tools</h2>
-    <table>
-      <tr><td>bcli stats</td><td>Notes, words, tags, dates, top tags</td></tr>
-      <tr><td>bcli duplicates</td><td>Find notes with duplicate titles</td></tr>
-      <tr><td>bcli health</td><td>Health report: duplicates, empties, orphans, conflicts</td></tr>
-      <tr><td>bcli sync</td><td>Sync to local cache</td></tr>
-      <tr><td>bcli sync --full</td><td>Force full re-sync</td></tr>
-      <tr><td>bcli export ./dir</td><td>Export as markdown</td></tr>
-      <tr><td>bcli export --frontmatter</td><td>With YAML metadata</td></tr>
-      <tr><td>bcli export --tag work</td><td>Filter by tag</td></tr>
-      <tr><td>bcli upgrade</td><td>Self-update to latest release</td></tr>
-      <tr><td>bcli mcp install</td><td>Install MCP server for Claude Desktop</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="mcp-tools">
-    <h2>MCP Tools</h2>
-    <p>29 tools available in <a href="#claude-desktop">Claude Desktop</a>, <a href="#claude-code">Claude Code</a>, and any MCP client. <code>npm: better-bear</code></p>
-
-    <h3>Bear notes</h3>
-    <table>
-      <tr><td>bear_sync</td><td>Sync from iCloud</td></tr>
-      <tr><td>bear_list_notes</td><td>List with tag/archive/trash filters</td></tr>
-      <tr><td>bear_get_note</td><td>Full content + parsed front matter</td></tr>
-      <tr><td>bear_search</td><td>Full-text search with date filters</td></tr>
-      <tr><td>bear_get_tags</td><td>Tag hierarchy with counts</td></tr>
-      <tr><td>bear_create_note</td><td>Create with tags and front matter</td></tr>
-      <tr><td>bear_edit_note</td><td>Append, replace, section edit, front matter</td></tr>
-      <tr><td>bear_attach_file</td><td>Upload image/file to iCloud</td></tr>
-      <tr><td>bear_archive_note</td><td>Archive or unarchive</td></tr>
-      <tr><td>bear_trash_note</td><td>Move to trash</td></tr>
-      <tr><td>bear_add_tag</td><td>Add tag to note</td></tr>
-      <tr><td>bear_remove_tag</td><td>Remove tag from note</td></tr>
-      <tr><td>bear_rename_tag</td><td>Rename across all notes</td></tr>
-      <tr><td>bear_delete_tag</td><td>Delete from all notes</td></tr>
-      <tr><td>bear_find_untagged</td><td>List untagged notes</td></tr>
-      <tr><td>bear_list_todos</td><td>Notes with incomplete TODOs</td></tr>
-      <tr><td>bear_get_todos</td><td>TODO items from a note</td></tr>
-      <tr><td>bear_toggle_todo</td><td>Toggle TODO completion</td></tr>
-      <tr><td>bear_note_stats</td><td>Library statistics</td></tr>
-      <tr><td>bear_find_duplicates</td><td>Find duplicate titles</td></tr>
-      <tr><td>bear_health_check</td><td>Library health report</td></tr>
-    </table>
-
-    <h3>Context library</h3>
-    <table>
-      <tr><td>bear_context_setup</td><td>Initialize the context library</td></tr>
-      <tr><td>bear_context_sync</td><td>Sync qualifying Bear notes to the library</td></tr>
-      <tr><td>bear_context_index</td><td>Get the index + freshness metadata</td></tr>
-      <tr><td>bear_context_fetch</td><td>Load specific files by path</td></tr>
-      <tr><td>bear_context_search</td><td>Full-text search across all files</td></tr>
-      <tr><td>bear_context_add</td><td>Tag a note for inclusion</td></tr>
-      <tr><td>bear_context_remove</td><td>Untag and remove a note</td></tr>
-      <tr><td>bear_context_status</td><td>Health stats and warnings</td></tr>
-    </table>
-  </section>
-
-  <hr>
-
-  <section id="scripts">
-    <h2>Scripts</h2>
-    <p>Shell scripts for common workflows in <a href="https://github.com/mreider/better-bear-cli/tree/main/scripts">scripts/</a>:</p>
-    <table>
-      <tr><td>daily-note.sh</td><td>Create a daily note from template (skips if exists)</td></tr>
-      <tr><td>meeting-note.sh</td><td>Meeting note with attendees and action items</td></tr>
-      <tr><td>backup.sh</td><td>Export all notes + git commit (cron-friendly)</td></tr>
-      <tr><td>cleanup-empty.sh</td><td>Find and optionally trash empty notes</td></tr>
-      <tr><td>bulk-tag.sh</td><td>Add a tag to notes matching a search</td></tr>
-      <tr><td>stale-notes.sh</td><td>Find notes not modified in N days</td></tr>
-      <tr><td>weekly-review.sh</td><td>Summary of this week's activity</td></tr>
-      <tr><td>import-markdown.sh</td><td>Import a folder of .md files as notes</td></tr>
-    </table>
+    <p>Run <code>hash -r</code> after upgrading. Restart Claude Desktop if using MCP. Need to build from source? See <a href="docs.html#build-from-source">full reference</a>.</p>
   </section>
 
   <hr>
@@ -502,6 +285,13 @@ bcli context search "deadlines" --json</code></div>
     <p>Same CloudKit REST API as <a href="https://web.bear.app">Bear Web</a>. Notes live in your iCloud private database. Does not touch Bear's local SQLite &mdash; safe to use with Bear open on any device.</p>
   </section>
 
+  <hr>
+
+  <section style="text-align: center; padding: 28px 0;">
+    <a href="docs.html" class="btn btn-primary" style="font-size: 15px; padding: 12px 32px;">Full Documentation &rarr;</a>
+    <p style="margin-top: 10px;">All CLI commands, MCP tools, scripts, and build instructions.</p>
+  </section>
+
   <div id="support" class="coffee">
     <a href="https://buymeacoffee.com/mreider"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="44"></a>
   </div>
@@ -510,6 +300,7 @@ bcli context search "deadlines" --json</code></div>
     <a href="https://github.com/mreider/better-bear-cli">GitHub</a> &middot;
     <a href="https://www.npmjs.com/package/better-bear">npm</a> &middot;
     <a href="https://github.com/mreider/better-bear-cli/issues">Issues</a> &middot;
+    <a href="docs.html">Docs</a> &middot;
     <a href="https://buymeacoffee.com/mreider">Support</a>
   </footer>
 

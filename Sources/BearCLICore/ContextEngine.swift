@@ -440,6 +440,225 @@ public struct ContextEngine {
         return try await sync(force: true)
     }
 
+    // MARK: - Import External
+
+    public func importExternal(
+        filename: String,
+        content: String,
+        group: String? = nil,
+        source: String? = nil,
+        summary: String? = nil
+    ) throws -> [String: Any] {
+        guard ContextConfig.exists() else {
+            throw ContextError.notInitialized
+        }
+        let config = try ContextConfig.load()
+        let dir = config.resolvedDir
+        let externalDir = dir.appendingPathComponent("external")
+
+        // Build YAML front matter
+        var fm = FrontMatter()
+        if let source = source { fm = fm.setting("source", value: source) }
+        if let group = group { fm = fm.setting("group", value: group) }
+        if let summary = summary { fm = fm.setting("summary", value: summary) }
+        let dateStr = ISO8601DateFormatter().string(from: Date())
+        fm = fm.setting("added", value: dateStr)
+
+        let fullContent = fm.toNoteText(body: content)
+        let targetFile = externalDir.appendingPathComponent(filename)
+        try fullContent.write(to: targetFile, atomically: true, encoding: .utf8)
+
+        // Regenerate index
+        let meta = try ContextMeta.load(from: dir)
+        try generateIndex(config: config, meta: meta, dir: dir)
+
+        return [
+            "action": "imported",
+            "filename": "external/\(filename)",
+            "tokens": fullContent.count / 4,
+        ]
+    }
+
+    // MARK: - Ingest Inbox
+
+    public func ingestInbox() throws -> [[String: Any]] {
+        guard ContextConfig.exists() else {
+            throw ContextError.notInitialized
+        }
+        let config = try ContextConfig.load()
+        let dir = config.resolvedDir
+        let inboxDir = dir.appendingPathComponent("inbox")
+
+        let fm = FileManager.default
+        guard let files = try? fm.contentsOfDirectory(at: inboxDir, includingPropertiesForKeys: [.fileSizeKey]) else {
+            return []
+        }
+
+        var results: [[String: Any]] = []
+        for file in files.filter({ $0.pathExtension == "md" }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            let content = (try? String(contentsOf: file, encoding: .utf8)) ?? ""
+            let attrs = try? fm.attributesOfItem(atPath: file.path)
+            let size = (attrs?[.size] as? Int) ?? content.count
+
+            var entry: [String: Any] = [
+                "filename": file.lastPathComponent,
+                "size": size,
+                "preview": String(content.prefix(500)),
+            ]
+
+            // Detect front matter
+            let (parsedFM, _) = FrontMatter.parse(content)
+            if let parsedFM = parsedFM {
+                entry["frontmatter"] = parsedFM.toDictionary()
+            }
+
+            results.append(entry)
+        }
+        return results
+    }
+
+    // MARK: - Triage Inbox File
+
+    public func triageInboxFile(
+        filename: String,
+        action: String,
+        group: String? = nil,
+        subtag: String? = nil,
+        summary: String? = nil
+    ) async throws -> [String: Any] {
+        guard ContextConfig.exists() else {
+            throw ContextError.notInitialized
+        }
+        let config = try ContextConfig.load()
+        let dir = config.resolvedDir
+        let inboxDir = dir.appendingPathComponent("inbox")
+        let inboxFile = inboxDir.appendingPathComponent(filename)
+
+        guard FileManager.default.fileExists(atPath: inboxFile.path) else {
+            throw ContextError.fileNotFound(filename)
+        }
+
+        let content = try String(contentsOf: inboxFile, encoding: .utf8)
+
+        switch action {
+        case "keep":
+            let externalDir = dir.appendingPathComponent("external")
+            // Add front matter if missing
+            let (existingFM, body) = FrontMatter.parse(content)
+            var fm = existingFM ?? FrontMatter()
+            if let group = group { fm = fm.setting("group", value: group) }
+            if let summary = summary { fm = fm.setting("summary", value: summary) }
+            if fm.get("added") == nil {
+                fm = fm.setting("added", value: ISO8601DateFormatter().string(from: Date()))
+            }
+            let fullContent = fm.toNoteText(body: body)
+            let targetFile = externalDir.appendingPathComponent(filename)
+            try fullContent.write(to: targetFile, atomically: true, encoding: .utf8)
+            try FileManager.default.removeItem(at: inboxFile)
+
+            let meta = try ContextMeta.load(from: dir)
+            try generateIndex(config: config, meta: meta, dir: dir)
+
+            return [
+                "action": "kept",
+                "filename": "external/\(filename)",
+                "tokens": fullContent.count / 4,
+            ]
+
+        case "push_to_bear":
+            let title = extractTitle(from: content) ?? filename.replacingOccurrences(of: ".md", with: "")
+            let tag = subtag != nil ? "\(config.tagPrefix)/\(subtag!)" : config.tagPrefix
+            _ = try await api.createNote(title: title, text: content, tags: [tag])
+            try FileManager.default.removeItem(at: inboxFile)
+
+            let meta = try ContextMeta.load(from: dir)
+            try generateIndex(config: config, meta: meta, dir: dir)
+
+            return [
+                "action": "pushed_to_bear",
+                "filename": filename,
+                "bear_tag": "#\(tag)",
+            ]
+
+        case "discard":
+            try FileManager.default.removeItem(at: inboxFile)
+
+            let meta = try ContextMeta.load(from: dir)
+            try generateIndex(config: config, meta: meta, dir: dir)
+
+            return [
+                "action": "discarded",
+                "filename": filename,
+            ]
+
+        default:
+            throw ContextError.invalidAction(action)
+        }
+    }
+
+    // MARK: - Push to Bear
+
+    public func pushToBear(
+        filename: String,
+        subtag: String? = nil,
+        title: String? = nil
+    ) async throws -> [String: Any] {
+        guard ContextConfig.exists() else {
+            throw ContextError.notInitialized
+        }
+        let config = try ContextConfig.load()
+        let dir = config.resolvedDir
+        let externalDir = dir.appendingPathComponent("external")
+        let externalFile = externalDir.appendingPathComponent(filename)
+
+        guard FileManager.default.fileExists(atPath: externalFile.path) else {
+            throw ContextError.fileNotFound(filename)
+        }
+
+        let content = try String(contentsOf: externalFile, encoding: .utf8)
+        let noteTitle = title ?? extractTitle(from: content) ?? filename.replacingOccurrences(of: ".md", with: "")
+        let tag = subtag != nil ? "\(config.tagPrefix)/\(subtag!)" : config.tagPrefix
+
+        _ = try await api.createNote(title: noteTitle, text: content, tags: [tag])
+        try FileManager.default.removeItem(at: externalFile)
+
+        let meta = try ContextMeta.load(from: dir)
+        try generateIndex(config: config, meta: meta, dir: dir)
+
+        return [
+            "action": "pushed_to_bear",
+            "filename": filename,
+            "bear_title": noteTitle,
+            "bear_tag": "#\(tag)",
+        ]
+    }
+
+    // MARK: - Remove External
+
+    public func removeExternal(filename: String) throws -> [String: Any] {
+        guard ContextConfig.exists() else {
+            throw ContextError.notInitialized
+        }
+        let config = try ContextConfig.load()
+        let dir = config.resolvedDir
+        let externalDir = dir.appendingPathComponent("external")
+        let externalFile = externalDir.appendingPathComponent(filename)
+
+        guard FileManager.default.fileExists(atPath: externalFile.path) else {
+            throw ContextError.fileNotFound(filename)
+        }
+
+        try FileManager.default.removeItem(at: externalFile)
+
+        let meta = try ContextMeta.load(from: dir)
+        try generateIndex(config: config, meta: meta, dir: dir)
+
+        return [
+            "action": "removed",
+            "filename": "external/\(filename)",
+        ]
+    }
+
     // MARK: - Status
 
     public func status() throws -> [String: Any] {
@@ -718,6 +937,8 @@ public struct ContextEngine {
 public enum ContextError: Error, CustomStringConvertible {
     case notInitialized
     case neverSynced
+    case fileNotFound(String)
+    case invalidAction(String)
 
     public var description: String {
         switch self {
@@ -725,6 +946,10 @@ public enum ContextError: Error, CustomStringConvertible {
             return "Context library not initialized. Run `bcli context init` first."
         case .neverSynced:
             return "Context library has never been synced. Run `bcli context sync` first."
+        case .fileNotFound(let name):
+            return "File not found: \(name)"
+        case .invalidAction(let action):
+            return "Invalid action: \(action). Use 'keep', 'push_to_bear', or 'discard'."
         }
     }
 }

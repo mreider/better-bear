@@ -823,4 +823,173 @@ export const tools: Record<string, ToolHandler> = {
     },
     buildArgs: () => ["context", "status", "--json"],
   },
+
+  bear_context_import: {
+    tool: {
+      name: "bear_context_import",
+      description:
+        "Import external content into the context library. Content is written to the external/ directory with YAML front matter (source, group, summary, date). Use this to add non-Bear content like Jira tickets, Slack threads, API docs, or any markdown. The content is passed via stdin and a filename must be provided.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          filename: {
+            type: "string",
+            description:
+              "Target filename in external/ (e.g., 'jira-ticket-123.md')",
+          },
+          content: {
+            type: "string",
+            description: "Markdown content to import",
+          },
+          group: {
+            type: "string",
+            description:
+              "Group label for organizing (e.g., 'jira', 'slack', 'docs')",
+          },
+          source: {
+            type: "string",
+            description:
+              "Source description (e.g., URL, tool name)",
+          },
+          summary: {
+            type: "string",
+            description: "Short summary of the content",
+          },
+        },
+        required: ["filename", "content"],
+      },
+    },
+    buildArgs: (input) => {
+      const args = ["context", "import", "--stdin", "--json"];
+      if (input.filename) args.push("--filename", String(input.filename));
+      if (input.group) args.push("--group", String(input.group));
+      if (input.source) args.push("--source", String(input.source));
+      if (input.summary) args.push("--summary", String(input.summary));
+      return args;
+    },
+    usesStdin: (input) => (input.content ? String(input.content) : null),
+  },
+
+  bear_context_ingest: {
+    tool: {
+      name: "bear_context_ingest",
+      description:
+        "Scan the inbox/ directory and list all untriaged files. Returns filename, size, content preview (first 500 chars), and any detected YAML front matter for each file. Does NOT modify anything — use bear_context_triage to act on files.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {},
+      },
+    },
+    buildArgs: () => ["context", "ingest", "--json"],
+  },
+
+  bear_context_triage: {
+    tool: {
+      name: "bear_context_triage",
+      description:
+        "Triage a file in the inbox. Three actions: 'keep' moves it to external/ with optional group/summary metadata. 'push_to_bear' creates a Bear note tagged #context (+ optional subtag) and deletes the inbox file. 'discard' deletes the file. All actions regenerate the index.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          filename: {
+            type: "string",
+            description: "Filename in inbox/ to triage",
+          },
+          action: {
+            type: "string",
+            enum: ["keep", "push_to_bear", "discard"],
+            description:
+              "Triage action: keep (move to external/), push_to_bear (create Bear note), or discard (delete)",
+          },
+          group: {
+            type: "string",
+            description:
+              "Group label (used with 'keep' action)",
+          },
+          subtag: {
+            type: "string",
+            description:
+              "Sub-tag for Bear note (used with 'push_to_bear' action, e.g., 'jira' → #context/jira)",
+          },
+          summary: {
+            type: "string",
+            description:
+              "Short summary (used with 'keep' action)",
+          },
+        },
+        required: ["filename", "action"],
+      },
+    },
+    buildArgs: (input) => {
+      const args = [
+        "context",
+        "triage",
+        String(input.filename),
+        String(input.action),
+        "--json",
+      ];
+      if (input.group) args.push("--group", String(input.group));
+      if (input.subtag) args.push("--subtag", String(input.subtag));
+      if (input.summary) args.push("--summary", String(input.summary));
+      return args;
+    },
+  },
+
+  bear_context_push_to_bear: {
+    tool: {
+      name: "bear_context_push_to_bear",
+      description:
+        "Push an external file to Bear as a new note. Creates a Bear note from the file content, tags it with #context (+ optional subtag), and removes the original external file. Use when external content has matured enough to become a permanent Bear note.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          filename: {
+            type: "string",
+            description: "Filename in external/ to push",
+          },
+          subtag: {
+            type: "string",
+            description:
+              "Sub-tag (e.g., 'architecture' → #context/architecture)",
+          },
+          title: {
+            type: "string",
+            description:
+              "Override note title (defaults to title extracted from content)",
+          },
+        },
+        required: ["filename"],
+      },
+    },
+    buildArgs: (input) => {
+      const args = ["context", "push", String(input.filename), "--json"];
+      if (input.subtag) args.push("--subtag", String(input.subtag));
+      if (input.title) args.push("--title", String(input.title));
+      return args;
+    },
+  },
+
+  bear_context_remove_external: {
+    tool: {
+      name: "bear_context_remove_external",
+      description:
+        "Remove a file from the external/ directory in the context library. Deletes the file and regenerates the index. Use when external content is no longer needed.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          filename: {
+            type: "string",
+            description: "Filename in external/ to remove",
+          },
+        },
+        required: ["filename"],
+      },
+    },
+    buildArgs: (input) => [
+      "context",
+      "remove-external",
+      String(input.filename),
+      "--json",
+    ],
+  },
 };

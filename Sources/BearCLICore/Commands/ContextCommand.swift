@@ -14,6 +14,11 @@ public struct ContextCommand: ParsableCommand {
             ContextAdd.self,
             ContextRemove.self,
             ContextStatus.self,
+            ContextImport.self,
+            ContextIngest.self,
+            ContextTriage.self,
+            ContextPush.self,
+            ContextRemoveExternal.self,
         ]
     )
     public init() {}
@@ -374,6 +379,264 @@ struct ContextStatus: ParsableCommand {
                 print("  Warnings:")
                 for w in warnings { print("    - \(w)") }
             }
+        }
+    }
+}
+
+// MARK: - Import
+
+struct ContextImport: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "import",
+        abstract: "Import an external file into the context library"
+    )
+
+    @Argument(help: "Source file path (omit if using --stdin)")
+    var filePath: String?
+
+    @Option(name: .long, help: "Target filename in external/ (defaults to source basename)")
+    var filename: String?
+
+    @Option(name: .long, help: "Group label for the file")
+    var group: String?
+
+    @Option(name: .long, help: "Source description (e.g., URL, tool name)")
+    var source: String?
+
+    @Option(name: .long, help: "Short summary of the content")
+    var summary: String?
+
+    @Flag(name: .long, help: "Read content from stdin")
+    var stdin: Bool = false
+
+    @Flag(name: .long, help: "Output as JSON")
+    var json: Bool = false
+
+    func run() throws {
+        let auth = try loadAuth()
+        let api = CloudKitAPI(auth: auth)
+        let engine = ContextEngine(api: api)
+        let json = self.json
+
+        let content: String
+        let targetFilename: String
+
+        if self.stdin {
+            // Read from stdin
+            let data = FileHandle.standardInput.availableData
+            guard let text = String(data: data, encoding: .utf8), !text.isEmpty else {
+                throw ContextError.fileNotFound("stdin (no input)")
+            }
+            content = text
+            guard let name = self.filename else {
+                throw ContextError.fileNotFound("--filename is required when using --stdin")
+            }
+            targetFilename = name.hasSuffix(".md") ? name : "\(name).md"
+        } else {
+            guard let path = self.filePath else {
+                throw ContextError.fileNotFound("No file path provided. Use a file path or --stdin.")
+            }
+            let expandedPath = NSString(string: path).expandingTildeInPath
+            let url = URL(fileURLWithPath: expandedPath)
+            content = try String(contentsOf: url, encoding: .utf8)
+            let basename = url.lastPathComponent
+            targetFilename = self.filename ?? (basename.hasSuffix(".md") ? basename : "\(basename).md")
+        }
+
+        let result = try engine.importExternal(
+            filename: targetFilename,
+            content: content,
+            group: self.group,
+            source: self.source,
+            summary: self.summary
+        )
+
+        if json {
+            if let data = try? JSONSerialization.data(withJSONObject: result, options: .prettyPrinted),
+               let str = String(data: data, encoding: .utf8) { print(str) }
+        } else {
+            print("Imported \(result["filename"] ?? targetFilename) (~\(result["tokens"] ?? 0) tokens)")
+        }
+    }
+}
+
+// MARK: - Ingest
+
+struct ContextIngest: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "ingest",
+        abstract: "Scan the inbox and list untriaged files"
+    )
+
+    @Flag(name: .long, help: "Output as JSON")
+    var json: Bool = false
+
+    func run() throws {
+        let auth = try loadAuth()
+        let api = CloudKitAPI(auth: auth)
+        let engine = ContextEngine(api: api)
+        let json = self.json
+
+        let results = try engine.ingestInbox()
+
+        if json {
+            if let data = try? JSONSerialization.data(withJSONObject: results, options: .prettyPrinted),
+               let str = String(data: data, encoding: .utf8) { print(str) }
+        } else {
+            if results.isEmpty {
+                print("Inbox is empty.")
+            } else {
+                print("\(results.count) file(s) in inbox:\n")
+                for item in results {
+                    let name = item["filename"] as? String ?? "?"
+                    let size = item["size"] as? Int ?? 0
+                    let preview = item["preview"] as? String ?? ""
+                    let firstLine = preview.components(separatedBy: "\n").first ?? ""
+                    print("  \(name) (\(size) bytes)")
+                    print("    \(String(firstLine.prefix(80)))")
+                    print()
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Triage
+
+struct ContextTriage: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "triage",
+        abstract: "Triage an inbox file: keep, push to Bear, or discard"
+    )
+
+    @Argument(help: "Filename in inbox/")
+    var filename: String
+
+    @Argument(help: "Action: keep, push_to_bear, or discard")
+    var action: String
+
+    @Option(name: .long, help: "Group label (used with keep)")
+    var group: String?
+
+    @Option(name: .long, help: "Sub-tag for Bear (used with push_to_bear)")
+    var subtag: String?
+
+    @Option(name: .long, help: "Short summary (used with keep)")
+    var summary: String?
+
+    @Flag(name: .long, help: "Output as JSON")
+    var json: Bool = false
+
+    func run() throws {
+        let auth = try loadAuth()
+        let api = CloudKitAPI(auth: auth)
+        let engine = ContextEngine(api: api)
+        let filename = self.filename
+        let action = self.action
+        let group = self.group
+        let subtag = self.subtag
+        let summary = self.summary
+        let json = self.json
+
+        try runAsync {
+            let result = try await engine.triageInboxFile(
+                filename: filename,
+                action: action,
+                group: group,
+                subtag: subtag,
+                summary: summary
+            )
+
+            if json {
+                if let data = try? JSONSerialization.data(withJSONObject: result, options: .prettyPrinted),
+                   let str = String(data: data, encoding: .utf8) { print(str) }
+            } else {
+                let resultAction = result["action"] as? String ?? action
+                print("Triaged \(filename): \(resultAction)")
+                if let target = result["filename"] as? String, target != filename {
+                    print("  → \(target)")
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Push
+
+struct ContextPush: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "push",
+        abstract: "Push an external file to Bear as a new note"
+    )
+
+    @Argument(help: "Filename in external/")
+    var filename: String
+
+    @Option(name: .long, help: "Sub-tag (e.g., 'jira' → #context/jira)")
+    var subtag: String?
+
+    @Option(name: .long, help: "Override note title")
+    var title: String?
+
+    @Flag(name: .long, help: "Output as JSON")
+    var json: Bool = false
+
+    func run() throws {
+        let auth = try loadAuth()
+        let api = CloudKitAPI(auth: auth)
+        let engine = ContextEngine(api: api)
+        let filename = self.filename
+        let subtag = self.subtag
+        let title = self.title
+        let json = self.json
+
+        try runAsync {
+            let result = try await engine.pushToBear(
+                filename: filename,
+                subtag: subtag,
+                title: title
+            )
+
+            if json {
+                if let data = try? JSONSerialization.data(withJSONObject: result, options: .prettyPrinted),
+                   let str = String(data: data, encoding: .utf8) { print(str) }
+            } else {
+                let bearTitle = result["bear_title"] as? String ?? filename
+                let bearTag = result["bear_tag"] as? String ?? "#context"
+                print("Pushed \(filename) to Bear as \"\(bearTitle)\" with \(bearTag)")
+            }
+        }
+    }
+}
+
+// MARK: - Remove External
+
+struct ContextRemoveExternal: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "remove-external",
+        abstract: "Remove a file from the external directory"
+    )
+
+    @Argument(help: "Filename in external/")
+    var filename: String
+
+    @Flag(name: .long, help: "Output as JSON")
+    var json: Bool = false
+
+    func run() throws {
+        let auth = try loadAuth()
+        let api = CloudKitAPI(auth: auth)
+        let engine = ContextEngine(api: api)
+        let filename = self.filename
+        let json = self.json
+
+        let result = try engine.removeExternal(filename: filename)
+
+        if json {
+            if let data = try? JSONSerialization.data(withJSONObject: result, options: .prettyPrinted),
+               let str = String(data: data, encoding: .utf8) { print(str) }
+        } else {
+            print("Removed external/\(filename)")
         }
     }
 }
