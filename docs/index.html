@@ -137,49 +137,50 @@
     <div class="context-diagram">~/.bear-context/
 ├── index.md              &larr; Claude reads this first
 ├── bear/                 &larr; synced from Bear (source of truth)
-│   ├── arch-overview.md
-│   └── jira-proj-1234.md
-├── external/             &larr; Jira exports, Confluence, Slack, etc.
-│   └── confluence-auth.md
+│   ├── project-plan.md
+│   └── meeting-notes.md
+├── external/             &larr; PDFs, exports, shared docs, etc.
+│   └── syllabus.md
 └── inbox/                &larr; drop zone for untriaged files</div>
 
     <h3>How it works</h3>
-    <p>Tag any Bear note with <code>#context</code> (or <code>#context/architecture</code>, <code>#context/jira</code>, etc.) and it enters the library on next sync. Remove the tag and it's cleaned up. Bear is always the source of truth for <code>bear/</code> files &mdash; local edits are overwritten on sync.</p>
-    <p>External files from other systems (Jira, Confluence, Slack) live in <code>external/</code> and are never overwritten by sync. Drop new files into <code>inbox/</code> for Claude to triage.</p>
+    <p>Tag any Bear note with <code>#context</code> (or <code>#context/research</code>, <code>#context/work</code>, etc.) and it enters the library on next sync. Remove the tag and it's cleaned up. Bear is always the source of truth for <code>bear/</code> files &mdash; local edits are overwritten on sync.</p>
+    <p>External files from other systems (Google Docs exports, PDFs, email threads) live in <code>external/</code> and are never overwritten by sync. Drop new files into <code>inbox/</code> for Claude to triage.</p>
 
     <h3>Setup</h3>
     <p>Tell Claude: <em>"Set up a context library"</em> &mdash; or from the terminal:</p>
     <div class="code-block"><code>bcli context init
 bcli context sync</code></div>
 
-    <h3>Example: project knowledge base</h3>
-    <p>You're leading a project. Architecture docs, Jira tickets, and meeting notes live in Bear. Tag them <code>#context/architecture</code>, <code>#context/jira</code>, <code>#context/meetings</code>.</p>
+    <h3>Example: study notes</h3>
+    <p>Tag your lecture notes and readings with <code>#context/bio101</code>. Claude reviews the index and pulls only the notes relevant to your question.</p>
     <div class="code-block"><code><strong>You:</strong>   "Sync my context and tell me what's there"
 <strong>Claude:</strong> Synced 14 notes (~52,000 tokens). 2 updated, 1 new.
-        Your library has 10 architecture docs, 3 Jira tickets, 1 meeting note.
+        Your library has 8 lecture notes, 4 reading summaries, 2 lab reports.
 
-<strong>You:</strong>   "What are the open risks in the auth service migration?"
-<strong>Claude:</strong> [reads index → fetches arch-overview.md + jira-1234.md + jira-1289.md]
-        Based on your notes, two risks: the session token storage doesn't meet
-        the new compliance requirements (JIRA-1234), and the legacy payment
-        processor cutover has no rollback plan (JIRA-1289).</code></div>
+<strong>You:</strong>   "Explain the difference between innate and adaptive immunity
+        using my notes"
+<strong>Claude:</strong> [reads index → fetches lecture-12-immunity.md + reading-adaptive.md]
+        Based on your lecture notes from March 20 and the assigned
+        reading: innate immunity is non-specific and immediate, while
+        adaptive immunity targets specific pathogens and builds memory...</code></div>
 
-    <h3>Example: onboarding a new teammate</h3>
-    <div class="code-block"><code><strong>You:</strong>   "Add my onboarding runbook to context"
-<strong>Claude:</strong> Tagged "Dev Onboarding Runbook" with #context. Synced.
+    <h3>Example: shared family or team notes</h3>
+    <div class="code-block"><code><strong>You:</strong>   "Add our vacation planning note to context"
+<strong>Claude:</strong> Tagged "Summer Trip Planning" with #context. Synced.
 
-<strong>New hire (in their own Claude Desktop):</strong>
-        "How do I set up the dev environment?"
-<strong>Claude:</strong> [fetches onboarding-runbook.md]
-        Here's the setup process from the team runbook: ...</code></div>
+<strong>Partner (in their own Claude Desktop):</strong>
+        "What hotels are we considering for the trip?"
+<strong>Claude:</strong> [fetches summer-trip-planning.md]
+        You're comparing three options from your planning note: ...</code></div>
 
     <h3>Example: CLI automation</h3>
-    <div class="code-block"><code># Nightly cron: sync context, check health, flag issues
+    <div class="code-block"><code># Sync and check for issues
 bcli context sync --json | jq '.added, .removed'
 bcli context status --json | jq '.warnings[]'
 
-# Pipe context into another tool
-bcli context fetch bear/arch-overview.md | pbcopy</code></div>
+# Quick lookup
+bcli context fetch bear/meeting-notes.md | pbcopy</code></div>
 
     <h3>CLI commands</h3>
     <table>
@@ -190,7 +191,7 @@ bcli context fetch bear/arch-overview.md | pbcopy</code></div>
       <tr><td>bcli context fetch &lt;path&gt;</td><td>Load a specific file</td></tr>
       <tr><td>bcli context search "query"</td><td>Full-text search across all files</td></tr>
       <tr><td>bcli context add &lt;id&gt;</td><td>Tag a note with #context, sync</td></tr>
-      <tr><td>bcli context add &lt;id&gt; --subtag jira</td><td>Tag as #context/jira</td></tr>
+      <tr><td>bcli context add &lt;id&gt; --subtag research</td><td>Tag as #context/research</td></tr>
       <tr><td>bcli context remove &lt;id&gt;</td><td>Untag and remove from library</td></tr>
       <tr><td>bcli context status</td><td>Health check: counts, tokens, staleness, warnings</td></tr>
     </table>

@@ -78,13 +78,13 @@ Turn a subset of your Bear notes into a synced, curated context folder that Clau
 ```
 bcli context init                          # one-time setup
 bcli context sync                          # pull qualifying notes
-bcli context add <id> --subtag architecture # tag a note for inclusion
+bcli context add <id> --subtag research    # tag a note for inclusion
 bcli context status                        # health check
 ```
 
 Or tell Claude: *"Set up a context library"* — and it handles everything via MCP tools.
 
-The architecture follows Karpathy's three-folder pattern: `bear/` (synced from CloudKit), `external/` (Jira, Confluence, Slack exports), and `inbox/` (drop zone for triage). An `index.md` manifest maps everything. See [better-bear.com](https://better-bear.com#context-library) for full documentation.
+The architecture follows Karpathy's three-folder pattern: `bear/` (synced from CloudKit), `external/` (PDFs, exports, shared docs), and `inbox/` (drop zone for triage). An `index.md` manifest maps everything. See [better-bear.com](https://better-bear.com#context-library) for full documentation.
 
 ## MCP Tools
 
