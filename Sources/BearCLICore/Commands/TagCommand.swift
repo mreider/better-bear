@@ -86,7 +86,15 @@ struct TagAdd: ParsableCommand {
             }
 
             let newText = newLines.joined(separator: "\n")
-            let updated = try await api.updateNote(record: record, newText: newText)
+
+            // Build updated tag metadata so Bear's tag index reflects the change
+            let (tagUUIDs, tagStringValues) = try await buildTagMetadata(
+                api: api, record: record, adding: tagName
+            )
+            let updated = try await api.updateNote(
+                record: record, newText: newText,
+                tagUUIDs: tagUUIDs, tagStrings: tagStringValues
+            )
             let note = BearNote(from: updated)
 
             if json {
@@ -169,7 +177,14 @@ struct TagRemove: ParsableCommand {
                 return
             }
 
-            let updated = try await api.updateNote(record: record, newText: newText)
+            // Build updated tag metadata so Bear's tag index reflects the removal
+            let (tagUUIDs, tagStringValues) = try await buildTagMetadata(
+                api: api, record: record, removing: tagName
+            )
+            let updated = try await api.updateNote(
+                record: record, newText: newText,
+                tagUUIDs: tagUUIDs, tagStrings: tagStringValues
+            )
             let note = BearNote(from: updated)
 
             if json {
@@ -309,7 +324,56 @@ struct TagDelete: ParsableCommand {
     }
 }
 
-// MARK: - Shared helper
+// MARK: - Shared helpers
+
+/// Build the updated `tags` (UUID list) and `tagsStrings` (string list) for a note
+/// after adding or removing a tag. This ensures Bear's sidebar tag index stays in sync.
+private func buildTagMetadata(
+    api: CloudKitAPI,
+    record: CKRecord,
+    adding: String? = nil,
+    removing: String? = nil
+) async throws -> (tagUUIDs: [String], tagStrings: [String]) {
+    // Get current tag strings from the note record
+    var currentStrings: [String] = []
+    if let arr = record.fields["tagsStrings"]?.value.arrayValue {
+        currentStrings = arr.compactMap { $0.stringValue }
+    }
+
+    // Get current tag UUIDs from the note record
+    var currentUUIDs: [String] = []
+    if let arr = record.fields["tags"]?.value.arrayValue {
+        currentUUIDs = arr.compactMap { $0.stringValue }
+    }
+
+    // Fetch all existing SFNoteTag records to map names to UUIDs
+    let allTags = try await api.queryTags()
+    var tagNameToUUID: [String: String] = [:]
+    for tagRecord in allTags {
+        if let title = tagRecord.fields["title"]?.value.stringValue {
+            tagNameToUUID[title] = tagRecord.recordName
+        }
+    }
+
+    if let add = adding, !currentStrings.contains(add) {
+        currentStrings.append(add)
+        if let uuid = tagNameToUUID[add] {
+            currentUUIDs.append(uuid)
+        }
+    }
+
+    if let remove = removing {
+        if let idx = currentStrings.firstIndex(of: remove) {
+            currentStrings.remove(at: idx)
+        }
+        if let uuid = tagNameToUUID[remove],
+           let idx = currentUUIDs.firstIndex(of: uuid) {
+            currentUUIDs.remove(at: idx)
+        }
+    }
+
+    return (currentUUIDs, currentStrings)
+}
 
 private func findNoteRecord(api: CloudKitAPI, noteID: String) async throws -> CKRecord {
     let records = try await api.lookupRecords(ids: [noteID])

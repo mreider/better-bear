@@ -229,7 +229,7 @@ public struct CloudKitAPI {
             "recordType": .string("SFNote"),
             "fields": .dictionary(fields),
             "pluginFields": .dictionary([:]),
-            "recordChangeTag": .string(record.recordChangeTag ?? ""),
+            "recordChangeTag": .string(try requireChangeTag(record)),
             "deleted": .bool(false),
         ]
 
@@ -405,8 +405,15 @@ public struct CloudKitAPI {
         return noteRecord
     }
 
-    /// Update an existing note's text content.
-    public func updateNote(record: CKRecord, newText: String) async throws -> CKRecord {
+    /// Update an existing note's text content, optionally updating tag metadata.
+    /// When `tagUUIDs` and `tagStrings` are provided, the note's tag index fields
+    /// are updated so Bear's sidebar reflects the change.
+    public func updateNote(
+        record: CKRecord,
+        newText: String,
+        tagUUIDs: [String]? = nil,
+        tagStrings: [String]? = nil
+    ) async throws -> CKRecord {
         let now = Int64(Date().timeIntervalSince1970 * 1000)
 
         // Extract title from the first H1 line of the new text, or keep existing
@@ -446,9 +453,6 @@ public struct CloudKitAPI {
         let existingUniqueID = record.fields["uniqueIdentifier"]?.value.stringValue
             ?? record.recordName
 
-        // Build conflict identifier: device/timestamp to signal this edit to other clients
-        let conflictID = "Bear CLI/\(now)"
-
         let fields: [String: AnyCodableValue] = [
             "textADP": .dictionary([
                 "value": .string(newText),
@@ -480,14 +484,6 @@ public struct CloudKitAPI {
                 "value": .string("Bear CLI"),
                 "type": .string("STRING"),
             ]),
-            "conflictUniqueIdentifier": .dictionary([
-                "value": .string(conflictID),
-                "type": .string("STRING"),
-            ]),
-            "conflictUniqueIdentifierDate": .dictionary([
-                "value": .int(now),
-                "type": .string("TIMESTAMP"),
-            ]),
             "todoCompleted": .dictionary([
                 "value": .int(Int64(todoCompletedCount)),
                 "type": .string("INT64"),
@@ -510,12 +506,27 @@ public struct CloudKitAPI {
             ]),
         ]
 
+        // Update tag index fields when tags have changed
+        var allFields = fields
+        if let uuids = tagUUIDs {
+            allFields["tags"] = .dictionary([
+                "value": .array(uuids.map { .string($0) }),
+                "type": .string("STRING_LIST"),
+            ])
+        }
+        if let strings = tagStrings {
+            allFields["tagsStrings"] = .dictionary([
+                "value": .array(strings.map { .string($0) }),
+                "type": .string("STRING_LIST"),
+            ])
+        }
+
         var recordDict: [String: AnyCodableValue] = [
             "recordName": .string(record.recordName),
             "recordType": .string("SFNote"),
-            "fields": .dictionary(fields),
+            "fields": .dictionary(allFields),
             "pluginFields": .dictionary([:]),
-            "recordChangeTag": .string(record.recordChangeTag ?? ""),
+            "recordChangeTag": .string(try requireChangeTag(record)),
             "deleted": .bool(false),
         ]
 
@@ -565,7 +576,7 @@ public struct CloudKitAPI {
             "recordType": .string("SFNote"),
             "fields": .dictionary(fields),
             "pluginFields": .dictionary([:]),
-            "recordChangeTag": .string(record.recordChangeTag ?? ""),
+            "recordChangeTag": .string(try requireChangeTag(record)),
             "deleted": .bool(false),
         ]
 
@@ -794,7 +805,7 @@ public struct CloudKitAPI {
             "recordType": .string("SFNote"),
             "fields": .dictionary(noteFields),
             "pluginFields": .dictionary([:]),
-            "recordChangeTag": .string(noteRecord.recordChangeTag ?? ""),
+            "recordChangeTag": .string(try requireChangeTag(noteRecord)),
             "deleted": .bool(false),
         ]
 
@@ -923,6 +934,20 @@ public struct CloudKitAPI {
             ]),
             "recordType": .string("SFNoteTag"),
         ]
+    }
+
+    // MARK: - Record Change Tag
+
+    /// Require a non-nil recordChangeTag for update operations.
+    /// CloudKit uses this for optimistic concurrency — sending an empty string
+    /// causes Bear to flag the update as a sync conflict.
+    private func requireChangeTag(_ record: CKRecord) throws -> String {
+        guard let tag = record.recordChangeTag, !tag.isEmpty else {
+            throw BearCLIError.networkError(
+                "Record \(record.recordName) has no recordChangeTag — cannot update safely"
+            )
+        }
+        return tag
     }
 
     // MARK: - Vector Clock Helpers
