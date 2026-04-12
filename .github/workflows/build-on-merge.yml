@@ -53,12 +53,49 @@ jobs:
       - name: Build release binary
         run: swift build -c release --arch arm64 --arch x86_64
 
+      - name: Sign binary
+        if: env.APPLE_CERTIFICATE_BASE64 != ''
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          # Import certificate to keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          CERT_PATH=$RUNNER_TEMP/certificate.p12
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > "$CERT_PATH"
+          security create-keychain -p "" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          # Sign the binary
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          codesign --force --options runtime --sign "$IDENTITY" .build/apple/Products/Release/bcli
+          codesign --verify --verbose .build/apple/Products/Release/bcli
+
       - name: Package binary
         run: |
           mkdir -p dist
           cp .build/apple/Products/Release/bcli dist/bcli
           cd dist && tar czf bcli-macos-universal.tar.gz bcli
           shasum -a 256 bcli-macos-universal.tar.gz > bcli-macos-universal.tar.gz.sha256
+
+      - name: Notarize binary
+        if: env.APPLE_ID_EMAIL != ''
+        env:
+          APPLE_ID_EMAIL: ${{ secrets.APPLE_ID_EMAIL }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          # Create a zip for notarization (notarytool needs zip, not tar.gz)
+          ditto -c -k dist/bcli dist/bcli-notarize.zip
+          xcrun notarytool submit dist/bcli-notarize.zip \
+            --apple-id "$APPLE_ID_EMAIL" \
+            --password "$APPLE_ID_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait --timeout 300
+          rm dist/bcli-notarize.zip
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
