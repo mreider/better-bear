@@ -22,6 +22,7 @@ concurrency:
 permissions:
   contents: write
   id-token: write
+  attestations: write
 
 jobs:
   build:
@@ -58,6 +59,11 @@ jobs:
           cp .build/apple/Products/Release/bcli dist/bcli
           cd dist && tar czf bcli-macos-universal.tar.gz bcli
           shasum -a 256 bcli-macos-universal.tar.gz > bcli-macos-universal.tar.gz.sha256
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/bcli-macos-universal.tar.gz
 
       # --- MCP Server: version bump, build, .mcpb bundle ---
 
