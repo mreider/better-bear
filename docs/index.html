@@ -119,7 +119,7 @@
     <h2>Context Library</h2>
 
     <div class="callout">
-      <strong>Background:</strong> Andrej Karpathy's <a href="https://x.com/karpathy/status/1909382922276999612" target="_blank">LLM Knowledge Base</a> pattern (April 2026) showed that the best way to give an LLM project knowledge isn't RAG or vector databases &mdash; it's a curated folder of markdown files with an index the model reads first. The LLM acts as a "research librarian," reading the index to find what's relevant, then loading only those files. Better Bear implements this pattern directly on top of your Bear notes.
+      <strong>Background:</strong> Andrej Karpathy's <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank">LLM Knowledge Base</a> pattern (April 2026) showed that the best way to give an LLM project knowledge isn't RAG or vector databases &mdash; it's a curated folder of markdown files with an index the model reads first. The LLM acts as a "research librarian," reading the index to find what's relevant, then loading only those files. Better Bear implements this pattern directly on top of your Bear notes.
     </div>
 
     <p>A context library is a synced, curated folder of Bear notes (plus external files) that Claude can navigate and query. Tag notes with <code>#context</code> in Bear, sync, and Claude uses index-first retrieval to find answers without loading everything.</p>

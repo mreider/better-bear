@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/mreider/better-bear-cli/blob/main/LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-orange?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/mreider)
 
-MCP server and CLI for [Bear](https://bear.app) notes via CloudKit. Includes a **context library** — a curated, synced folder of notes optimized for LLM consumption, inspired by [Karpathy's LLM Knowledge Base](https://x.com/karpathy/status/1909382922276999612) pattern.
+MCP server and CLI for [Bear](https://bear.app) notes via CloudKit. Includes a **context library** — a curated, synced folder of notes optimized for LLM consumption, inspired by [Karpathy's LLM Knowledge Base](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern.
 
 **Full docs: [better-bear.com](https://better-bear.com)**
 

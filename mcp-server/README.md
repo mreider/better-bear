@@ -4,7 +4,7 @@ MCP server for [Bear](https://bear.app) notes. Read, search, create, edit, tag, 
 
 Works via CloudKit — no Bear URL scheme, no AppleScript. Your notes stay in sync across all devices.
 
-> **Context Library** — Inspired by [Karpathy's LLM Knowledge Base](https://x.com/karpathy/status/1909382922276999612) pattern: tag Bear notes with `#context`, sync to a local folder, and Claude uses index-first retrieval to navigate your knowledge. No RAG pipeline, no vector database — just curated markdown with a manifest.
+> **Context Library** — Inspired by [Karpathy's LLM Knowledge Base](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern: tag Bear notes with `#context`, sync to a local folder, and Claude uses index-first retrieval to navigate your knowledge. No RAG pipeline, no vector database — just curated markdown with a manifest.
 
 ## Quick start
 
