@@ -175,7 +175,17 @@ bcli context sync</code></div>
 
   <section id="claude-desktop">
     <h2>Claude Desktop</h2>
-    <p>Add to your <code>claude_desktop_config.json</code> (Settings &rarr; Developer &rarr; Edit Config):</p>
+
+    <h3>Quick install (recommended)</h3>
+    <p>If you have the <code>bcli</code> binary installed (<a href="#cli-install">see below</a>), run:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('bcli mcp install --desktop-only');this.textContent='Copied!'">Copy</button>
+      <code>bcli mcp install --desktop-only</code>
+    </div>
+    <p>This adds the <code>better-bear</code> entry to your <code>claude_desktop_config.json</code> automatically. Restart Claude Desktop to activate.</p>
+
+    <h3>Manual install</h3>
+    <p>Or edit your config directly (Settings &rarr; Developer &rarr; Edit Config):</p>
     <div class="code-block">
       <button class="copy-btn" onclick="navigator.clipboard.writeText('{&quot;mcpServers&quot;:{&quot;better-bear&quot;:{&quot;command&quot;:&quot;npx&quot;,&quot;args&quot;:[&quot;-y&quot;,&quot;better-bear&quot;]}}}');this.textContent='Copied!'">Copy</button>
       <code>{
@@ -187,13 +197,27 @@ bcli context sync</code></div>
   }
 }</code>
     </div>
-    <p>Restart Claude Desktop after saving. Requires <a href="https://nodejs.org">Node.js 18+</a> and the <code>bcli</code> binary (see <a href="#cli-install">CLI Install</a>).</p>
+    <p>Restart Claude Desktop after saving.</p>
+
+    <h3>Manage</h3>
+    <div class="code-block"><code>bcli mcp status      # check what's configured
+bcli mcp uninstall   # remove from Claude Desktop and Claude Code
+bcli mcp reinstall   # clean uninstall + install</code></div>
+    <p>Use <code>--desktop-only</code> or <code>--code-only</code> with install/uninstall to target one client.</p>
+
+    <p>Requires <a href="https://nodejs.org">Node.js 18+</a> and the <code>bcli</code> binary (see <a href="#cli-install">CLI Install</a>).</p>
   </section>
 
   <hr>
 
   <section id="claude-code">
     <h2>Claude Code</h2>
+    <p>Using the CLI:</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('bcli mcp install --code-only');this.textContent='Copied!'">Copy</button>
+      <code>bcli mcp install --code-only</code>
+    </div>
+    <p>Or add it directly:</p>
     <div class="code-block">
       <button class="copy-btn" onclick="navigator.clipboard.writeText('claude mcp add better-bear -- npx -y better-bear');this.textContent='Copied!'">Copy</button>
       <code>claude mcp add better-bear -- npx -y better-bear</code>
