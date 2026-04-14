@@ -2,10 +2,10 @@
 
 [![better-bear MCP server](https://glama.ai/mcp/servers/mreider/better-bear/badges/card.svg)](https://glama.ai/mcp/servers/mreider/better-bear)
 
-[![Build](https://github.com/mreider/better-bear/actions/workflows/build-on-merge.yml/badge.svg)](https://github.com/mreider/better-bear/actions/workflows/build-on-merge.yml)
-[![Release](https://img.shields.io/github/v/release/mreider/better-bear)](https://github.com/mreider/better-bear/releases/latest)
+[![Build](https://github.com/KuvopLLC/better-bear/actions/workflows/build-on-merge.yml/badge.svg)](https://github.com/KuvopLLC/better-bear/actions/workflows/build-on-merge.yml)
+[![Release](https://img.shields.io/github/v/release/KuvopLLC/better-bear)](https://github.com/KuvopLLC/better-bear/releases/latest)
 [![npm](https://img.shields.io/npm/v/better-bear)](https://www.npmjs.com/package/better-bear)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/mreider/better-bear/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/KuvopLLC/better-bear/blob/main/LICENSE)
 [![better-bear MCP server](https://glama.ai/mcp/servers/mreider/better-bear/badges/score.svg)](https://glama.ai/mcp/servers/mreider/better-bear)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-orange?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/mreider)
 
@@ -18,7 +18,7 @@ MCP server and CLI for [Bear](https://bear.app) notes via CloudKit. Includes a *
 Install the CLI, then connect to Claude:
 
 ```
-curl -sL https://raw.githubusercontent.com/mreider/better-bear/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/KuvopLLC/better-bear/main/install.sh | bash
 bcli auth
 bcli mcp install
 ```
@@ -33,7 +33,7 @@ This installs the `bcli` binary, authenticates with iCloud, and sets up the MCP 
 | Claude Code only | `bcli mcp install --code-only` |
 | Claude Code (direct) | `claude mcp add better-bear -- npx -y better-bear` |
 | Config file | `bcli mcp install --json` |
-| .mcpb bundle | Download from [latest release](https://github.com/mreider/better-bear/releases/latest) and double-click |
+| .mcpb bundle | Download from [latest release](https://github.com/KuvopLLC/better-bear/releases/latest) and double-click |
 
 ### Manage
 

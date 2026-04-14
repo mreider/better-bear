@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="mreider/better-bear"
+REPO="KuvopLLC/better-bear"
 INSTALL_DIR="${HOME}/.local/bin"
 BINARY="bcli"
 

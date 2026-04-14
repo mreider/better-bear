@@ -102,7 +102,7 @@ export async function findBcli(): Promise<string> {
   }
 
   throw new Error(
-    "bcli not found. Install it from https://github.com/mreider/better-bear/releases " +
+    "bcli not found. Install it from https://github.com/KuvopLLC/better-bear/releases " +
       "or set BCLI_PATH environment variable.",
   );
 }

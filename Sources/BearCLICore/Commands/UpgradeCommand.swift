@@ -81,7 +81,7 @@ public struct UpgradeCommand: ParsableCommand {
     }
 
     private func fetchLatestVersion() throws -> String {
-        let url = URL(string: "https://api.github.com/repos/mreider/better-bear/releases/latest")!
+        let url = URL(string: "https://api.github.com/repos/KuvopLLC/better-bear/releases/latest")!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 10
@@ -118,7 +118,7 @@ public struct UpgradeCommand: ParsableCommand {
     }
 
     private func downloadAndReplace(to targetPath: String) throws {
-        let downloadURL = URL(string: "https://github.com/mreider/better-bear/releases/latest/download/bcli-macos-universal.tar.gz")!
+        let downloadURL = URL(string: "https://github.com/KuvopLLC/better-bear/releases/latest/download/bcli-macos-universal.tar.gz")!
         let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: tmpDir) }

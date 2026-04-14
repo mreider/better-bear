@@ -33,16 +33,16 @@
     "name": "Matt Reider",
     "email": "mreider@gmail.com"
   },
-  "mcpName": "io.github.mreider/better-bear",
+  "mcpName": "io.github.KuvopLLC/better-bear",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mreider/better-bear.git",
+    "url": "git+https://github.com/KuvopLLC/better-bear.git",
     "directory": "mcp-server"
   },
   "homepage": "https://better-bear.com",
   "bugs": {
-    "url": "https://github.com/mreider/better-bear/issues"
+    "url": "https://github.com/KuvopLLC/better-bear/issues"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0"

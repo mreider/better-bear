@@ -12,7 +12,7 @@ Works via CloudKit — no Bear URL scheme, no AppleScript. Your notes stay in sy
 ## Quick start
 
 ```sh
-curl -sL https://raw.githubusercontent.com/mreider/better-bear/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/KuvopLLC/better-bear/main/install.sh | bash
 bcli auth
 bcli mcp install
 ```
@@ -27,7 +27,7 @@ This installs the `bcli` binary, authenticates with iCloud, and sets up the MCP 
 | Claude Code only | `bcli mcp install --code-only` |
 | Claude Code (direct) | `claude mcp add better-bear -- npx -y better-bear` |
 | Config file | `bcli mcp install --json` |
-| .mcpb bundle | Download from [latest release](https://github.com/mreider/better-bear/releases/latest) and double-click |
+| .mcpb bundle | Download from [latest release](https://github.com/KuvopLLC/better-bear/releases/latest) and double-click |
 
 ### Prerequisites
 
@@ -76,15 +76,15 @@ This installs the `bcli` binary, authenticates with iCloud, and sets up the MCP 
 
 ## How it works
 
-This MCP server wraps [bcli](https://github.com/mreider/better-bear), a native macOS binary that talks to Bear's CloudKit container. The server communicates with MCP clients via stdio and spawns `bcli` commands for each operation.
+This MCP server wraps [bcli](https://github.com/KuvopLLC/better-bear), a native macOS binary that talks to Bear's CloudKit container. The server communicates with MCP clients via stdio and spawns `bcli` commands for each operation.
 
 Authentication tokens are stored locally in `~/.config/bear-cli/auth.json` and automatically refreshed when expired.
 
 ## Links
 
 - [Website](https://better-bear.com)
-- [GitHub](https://github.com/mreider/better-bear)
-- [Issues](https://github.com/mreider/better-bear/issues)
+- [GitHub](https://github.com/KuvopLLC/better-bear)
+- [Issues](https://github.com/KuvopLLC/better-bear/issues)
 
 ## Privacy Policy
 

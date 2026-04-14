@@ -52,7 +52,7 @@ jobs:
                 '2. Create a new **Automation** token',
                 '3. Update the repo secret:',
                 '   ```',
-                '   echo "npm_YOUR_NEW_TOKEN" | gh secret set NPM_TOKEN -R mreider/better-bear',
+                '   echo "npm_YOUR_NEW_TOKEN" | gh secret set NPM_TOKEN -R KuvopLLC/better-bear',
                 '   ```',
                 '4. Close this issue',
               ].join('\n'),

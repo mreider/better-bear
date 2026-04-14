@@ -201,7 +201,7 @@ jobs:
           if [ -z "$NPM_TOKEN" ]; then
             echo "::error::NPM_TOKEN secret is missing or expired."
             echo "::error::Go to https://www.npmjs.com/settings/mreider/tokens and create a new Automation token."
-            echo "::error::Then run: gh secret set NPM_TOKEN -R mreider/better-bear"
+            echo "::error::Then run: gh secret set NPM_TOKEN -R KuvopLLC/better-bear"
             exit 1
           fi
           cd mcp-server
