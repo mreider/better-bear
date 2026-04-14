@@ -20,7 +20,7 @@ public enum VersionCheck {
         }
 
         // Fetch from GitHub (with short timeout)
-        guard let url = URL(string: "https://api.github.com/repos/mreider/better-bear-cli/releases/latest") else { return }
+        guard let url = URL(string: "https://api.github.com/repos/mreider/better-bear/releases/latest") else { return }
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 3 // Don't hang

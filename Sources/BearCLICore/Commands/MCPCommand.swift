@@ -148,7 +148,7 @@ private func writeClaudeConfig(_ config: [String: Any], to url: URL) throws {
     try data.write(to: url)
 }
 
-private let mcpbURL = "https://github.com/mreider/better-bear-cli/releases/latest/download/better-bear.mcpb"
+private let mcpbURL = "https://github.com/mreider/better-bear/releases/latest/download/better-bear.mcpb"
 
 @discardableResult
 private func installDesktop(useJson: Bool) throws -> Bool {

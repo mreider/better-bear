@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="mreider/better-bear-cli"
+REPO="mreider/better-bear"
 INSTALL_DIR="${HOME}/.local/bin"
 BINARY="bcli"
 
-echo "Installing better-bear-cli..."
+echo "Installing better-bear..."
 
 # Create install directory
 mkdir -p "$INSTALL_DIR"

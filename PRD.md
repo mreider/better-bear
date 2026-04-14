@@ -13,7 +13,7 @@ Bear is a great note-taking app, but it has no way to talk to AI assistants. Use
 Today, the workarounds are:
 
 - **Copy-paste manually.** Open Bear, find the note, copy text, paste into Claude, wait for a response, copy it back. Tedious for one note, unusable for workflows that span many notes.
-- **Use bcli in the terminal.** better-bear-cli already provides full programmatic access to Bear via CloudKit, but there's no bridge between bcli and AI assistants. Users have to manually run commands and feed output to Claude.
+- **Use bcli in the terminal.** better-bear already provides full programmatic access to Bear via CloudKit, but there's no bridge between bcli and AI assistants. Users have to manually run commands and feed output to Claude.
 - **Export everything to files.** Some users export all Bear notes to a directory so Claude Code can read them. This is a one-way snapshot -- stale immediately, no write-back, and doesn't work with Claude Desktop at all.
 
 The underlying problem: Bear notes are locked behind a GUI. bcli unlocked them for the terminal. Now they need to be unlocked for AI assistants.

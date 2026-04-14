@@ -1,4 +1,4 @@
-# bcli (better-bear-cli) -- Full Specification
+# bcli (better-bear) -- Full Specification
 
 Version: 0.3.3
 Last updated: 2026-03-29

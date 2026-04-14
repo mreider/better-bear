@@ -37,12 +37,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mreider/better-bear-cli.git",
+    "url": "git+https://github.com/mreider/better-bear.git",
     "directory": "mcp-server"
   },
   "homepage": "https://better-bear.com",
   "bugs": {
-    "url": "https://github.com/mreider/better-bear-cli/issues"
+    "url": "https://github.com/mreider/better-bear/issues"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1"

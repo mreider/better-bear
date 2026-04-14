@@ -3,7 +3,7 @@
   "name": "io.github.mreider/better-bear",
   "description": "MCP server for Bear notes — read, search, create, edit, tag, and manage notes via CloudKit",
   "repository": {
-    "url": "https://github.com/mreider/better-bear-cli",
+    "url": "https://github.com/mreider/better-bear",
     "source": "github"
   },
   "version": "0.4.0",
