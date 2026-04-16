@@ -3,10 +3,10 @@
   "name": "io.github.KuvopLLC/better-bear",
   "description": "MCP server for Bear notes — read, search, create, edit, tag, and manage notes via CloudKit",
   "repository": {
-    "url": "https://github.com/KuvopLLC/better-bear/tree/main/mcp-server",
+    "url": "https://github.com/KuvopLLC/better-bear",
     "source": "github"
   },
-  "version": "0.4.0",
+  "version": "0.4.1",
   "tools": [
     { "name": "bear_sync", "description": "Sync notes from iCloud" },
     { "name": "bear_list_notes", "description": "List notes with filters" },
@@ -34,7 +34,7 @@
     {
       "registryType": "npm",
       "identifier": "better-bear",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "transport": {
         "type": "stdio"
       }

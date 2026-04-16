@@ -1,6 +1,6 @@
 {
   "name": "better-bear",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "MCP server for Bear notes — read, search, create, edit, tag, and manage notes via CloudKit",
   "type": "module",
   "main": "dist/index.js",
